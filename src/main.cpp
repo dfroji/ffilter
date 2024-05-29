@@ -11,19 +11,23 @@ int main(int argc, char* argv[]) {
     const std::set<std::string> FILTERS = {"median"};
     const std::string DEFAULT_FILTER_SIZE = "3";
 
+    const std::string FILTER_COMMAND_KEY = "-f";
+    const std::string FILTER_SIZE_COMMAND_KEY = "-fs";
+    const std::string INPUT_FILE_COMMAND_KEY = "-i";
+    const std::string OUTPUT_FILE_COMMAND_KEY = "-o";
+
     fparser::Parser parser = fparser::Parser();
 
     // filter parsing
-    std::string f_cmnd_key = "-f";
     parser.add_command(
-        f_cmnd_key,
-        [FILTERS, f_cmnd_key](std::vector<std::string> arguments) {
+        FILTER_COMMAND_KEY,
+        [FILTERS, FILTER_COMMAND_KEY](std::vector<std::string> arguments) {
             if (FILTERS.contains(arguments[0])) {
                 return std::vector<std::string>{arguments[0]};
             }
 
             std::cout << "Error: the argument for " 
-            << f_cmnd_key 
+            << FILTER_COMMAND_KEY 
             << " should be one of the following:" 
             << std::endl;
 
@@ -35,10 +39,9 @@ int main(int argc, char* argv[]) {
     );
 
     // filter size parsing
-    std::string fs_cmnd_key = "-fs";
     parser.add_command(
-        fs_cmnd_key,
-        [fs_cmnd_key, DEFAULT_FILTER_SIZE](std::vector<std::string> arguments) {
+        FILTER_SIZE_COMMAND_KEY,
+        [FILTER_SIZE_COMMAND_KEY, DEFAULT_FILTER_SIZE](std::vector<std::string> arguments) {
             try {
                 int size = std::stoi(arguments[0]);
                 if (size >= 3 && size % 2 != 0) {
@@ -47,7 +50,7 @@ int main(int argc, char* argv[]) {
                 } else {
                     std::cout 
                     << "Error: the argument for "  
-                    << fs_cmnd_key 
+                    << FILTER_SIZE_COMMAND_KEY 
                     << " should be greater or equal to 3 and odd."
                     << std::endl
                     << "Defaulting to " 
@@ -61,7 +64,7 @@ int main(int argc, char* argv[]) {
             } catch (...) {
                 std::cout 
                 << "Error: the argument for " 
-                << fs_cmnd_key 
+                << FILTER_SIZE_COMMAND_KEY 
                 << " should be an integer."
                 << std::endl
                 << "Defaulting to "
@@ -71,6 +74,22 @@ int main(int argc, char* argv[]) {
 
                 return std::vector<std::string>{};
             }
+        }
+    );
+
+    // input file parsing
+    parser.add_command(
+        INPUT_FILE_COMMAND_KEY,
+        [](std::vector<std::string> arguments) {
+            return std::vector<std::string>{arguments[0]};
+        }
+    );
+
+    // output file parsing
+    parser.add_command(
+        OUTPUT_FILE_COMMAND_KEY,
+        [](std::vector<std::string> arguments) {
+            return std::vector<std::string>{arguments[0]};
         }
     );
 

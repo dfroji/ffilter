@@ -14,29 +14,29 @@ FetchContent_Declare(fparser
     GIT_TAG origin/main
     )
 
+FetchContent_MakeAvailable(fparser)
+
 include_directories(fparser
     ${fparser_SOURCE_DIR}/include
     )
 
-FetchContent_MakeAvailable(fparser)
-
+set(lodepng ${CMAKE_BINARY_DIR}/external/lodepng)
 file(DOWNLOAD
     https://raw.githubusercontent.com/lvandeve/lodepng/master/lodepng.cpp
-    ${CMAKE_BINARY_DIR}/external/lodepng/lodepng.cpp
+    ${lodepng}/lodepng.cpp
     )
-
 file(DOWNLOAD
     https://raw.githubusercontent.com/lvandeve/lodepng/master/lodepng.h
-    ${CMAKE_BINARY_DIR}/external/lodepng/lodepng.h
+    ${lodepng}/lodepng.h
     )
 
 include_directories(lodepng
-    ${CMAKE_BINARY_DIR}/external/lodepng/
+    ${lodepng}/
     )
 
 add_executable(ffilter
     src/main.cpp
-    ${CMAKE_BINARY_DIR}/external/lodepng/lodepng.cpp
+    ${lodepng}/lodepng.cpp
     )
 
 target_link_libraries(ffilter

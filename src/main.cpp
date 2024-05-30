@@ -3,13 +3,13 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <ctime>
 
 #include "parser.h"
 #include "image.h"
 
 int main(int argc, char* argv[]) {
-    
-    const std::set<std::string> FILTERS = {"median"};
+   
     const std::string DEFAULT_FILTER_SIZE = "3";
 
     const std::string FILTER_COMMAND_KEY = "-f";
@@ -22,8 +22,8 @@ int main(int argc, char* argv[]) {
     // filter parsing
     parser.add_command(
         FILTER_COMMAND_KEY,
-        [FILTERS, FILTER_COMMAND_KEY](std::vector<std::string> arguments) {
-            if (FILTERS.contains(arguments[0])) {
+        [FILTER_COMMAND_KEY](std::vector<std::string> arguments) {
+            if (image::FILTERS.contains(arguments[0])) {
                 return std::vector<std::string>{arguments[0]};
             }
 
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
             << " should be one of the following:" 
             << std::endl;
 
-            for (const auto& filter : FILTERS) {
+            for (const auto& filter : image::FILTERS) {
                 std::cout << " - " << filter << std::endl;
             }
             return std::vector<std::string>{};
@@ -56,7 +56,6 @@ int main(int argc, char* argv[]) {
                     << std::endl
                     << "Defaulting to " 
                     << DEFAULT_FILTER_SIZE 
-                    << ". " 
                     << std::endl;
                     
                     return std::vector<std::string>{};
@@ -70,7 +69,6 @@ int main(int argc, char* argv[]) {
                 << std::endl
                 << "Defaulting to "
                 << DEFAULT_FILTER_SIZE
-                << ". "
                 << std::endl;
 
                 return std::vector<std::string>{};
@@ -103,13 +101,27 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    Image image = Image();
+    // use no filter if filter was not passed
+    std::string filter = "";
+    if (parse_results.find(FILTER_COMMAND_KEY) != parse_results.end()) {
+        filter = parse_results[FILTER_COMMAND_KEY][0];
+    }
+
+    int filter_size = std::stoi(DEFAULT_FILTER_SIZE);
+    if (parse_results.find(FILTER_SIZE_COMMAND_KEY) != parse_results.end()) {
+        filter_size = std::stoi(parse_results[FILTER_SIZE_COMMAND_KEY][0]);
+    }
+
+    Image image = Image(filter);
 
     // load image
     // exit if loading image fails
     if (!image.load_image(parse_results[INPUT_FILE_COMMAND_KEY][0])) {
         return 1;    
     }
+
+    // apply the filter
+    image.filter(filter_size);
 
     // save image
     // exit if saving image fails

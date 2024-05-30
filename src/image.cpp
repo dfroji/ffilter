@@ -17,6 +17,9 @@ Image::Image(const std::string& filter) {
     else if (filter == "median") {
         this->filter_function = std::bind(&Image::median_filter, this, std::placeholders::_1);
     }
+    else if (filter == "average") {
+        this->filter_function = std::bind(&Image::average_filter, this, std::placeholders::_1);
+    }
 }
 
 Image::~Image() {
@@ -152,3 +155,47 @@ void Image::median_filter_thread(int filter_size, int thread_num) {
     }
 }
 
+void Image::average_filter(int filter_size) {
+    std::vector<std::thread> threads;
+
+    // create threads
+    // run average_filter_thread on them
+    for (int i = 0; i < this->height; i++) {
+        threads.push_back(std::thread(
+            std::bind(&Image::average_filter_thread, this, filter_size, i)
+        ));
+    }
+
+    for (auto& thread : threads) {
+        thread.join();
+    }
+}
+
+void Image::average_filter_thread(int filter_size, int thread_num) {
+    for (int pixel = thread_num * this->width; pixel < thread_num * this->width + this->width; pixel++) {
+        std::vector<Pixel*> pixels_under_mask = get_pixels_under_mask(filter_size, pixel);
+
+        int R = 0;
+        int G = 0; 
+        int B = 0;
+        int A = 0;
+
+        for (Pixel* pixel : pixels_under_mask) {
+            R += pixel->R;
+            G += pixel->G;
+            B += pixel->B;
+            A += pixel->A;
+        }
+
+        R /= filter_size * filter_size;
+        G /= filter_size * filter_size;
+        B /= filter_size * filter_size;
+        A /= filter_size * filter_size;
+
+        this->data[pixel]->R = R;
+        this->data[pixel]->G = G;
+        this->data[pixel]->B = B;
+        this->data[pixel]->A = A;
+        
+    }
+}

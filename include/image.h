@@ -6,7 +6,10 @@
 #include <set>
 
 namespace image {
-    const std::set<std::string> FILTERS = {"median"};
+    const std::set<std::string> FILTERS = {
+                                        "median",
+                                        "average"
+                                        };
 }
 
 struct Pixel {
@@ -42,5 +45,8 @@ class Image {
 
         void median_filter(int filter_size);
         void median_filter_thread(int filter_size, int thread_num);
+
+        void average_filter(int filter_size);
+        void average_filter_thread(int filter_size, int thread_num);
 
 };

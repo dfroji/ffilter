@@ -34,8 +34,11 @@ include_directories(lodepng
     ${lodepng}/
     )
 
+include_directories(include)
+
 add_executable(ffilter
     src/main.cpp
+    src/image.cpp
     ${lodepng}/lodepng.cpp
     )
 

@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "parser.h"
+#include "image.h"
 
 int main(int argc, char* argv[]) {
     
@@ -94,6 +95,20 @@ int main(int argc, char* argv[]) {
     );
 
     fparser::Map parse_results = parser.parse(argc, argv);
+
+    // exit if filepath not passed
+    if (parse_results.find(INPUT_FILE_COMMAND_KEY) == parse_results.end()) {
+        return 1;
+    }
+
+    Image image = Image();
+
+    // load image
+    // exit if loading image fails
+    if (!image.load_image(parse_results[INPUT_FILE_COMMAND_KEY][0])) {
+        return 1;    
+    }
+
 
     return 0;
 }

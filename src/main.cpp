@@ -96,8 +96,10 @@ int main(int argc, char* argv[]) {
 
     fparser::Map parse_results = parser.parse(argc, argv);
 
-    // exit if filepath not passed
-    if (parse_results.find(INPUT_FILE_COMMAND_KEY) == parse_results.end()) {
+    // exit if filepaths not passed
+    if (parse_results.find(INPUT_FILE_COMMAND_KEY) == parse_results.end()
+        || parse_results.find(OUTPUT_FILE_COMMAND_KEY) == parse_results.end()
+        ) {
         return 1;
     }
 
@@ -107,6 +109,12 @@ int main(int argc, char* argv[]) {
     // exit if loading image fails
     if (!image.load_image(parse_results[INPUT_FILE_COMMAND_KEY][0])) {
         return 1;    
+    }
+
+    // save image
+    // exit if saving image fails
+    if (!image.save_image(parse_results[OUTPUT_FILE_COMMAND_KEY][0])) {
+        return 1;
     }
 
 
